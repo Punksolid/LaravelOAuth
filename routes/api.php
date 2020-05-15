@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GetAccessTokenController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,18 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('get_access_token', function (Request $request) {
-    /** @var \App\User $user */
-    $user = \App\User::where('email', $request->username )->first();
-    $token = $user->createToken('whatever');
-    $client = \Laravel\Passport\Passport::client();
-    \Laravel\Passport\Passport::actingAsClient($client);
-    return \Illuminate\Http\JsonResponse::create([
-        'access_token' => 'client_credentials',
-        'refresh_token' => 'client-id',
-        'expires_in' => 'client-secret',
-        'user_id' => $user->id,
-    ]);
-} );
-Route::middleware('client')->resource('tasks','TaskController');
+Route::post('get_access_token', 'GetAccessTokenController');
+
+
+//Route::middleware('client')->resource('tasks','TaskController');
+Route::middleware('auth:api')->resource('tasks','TaskController');
 //Route::resource('tasks','TaskController');
